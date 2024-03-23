@@ -1,3 +1,7 @@
+import math
+import time
+
+
 # Tree object of root connected to left and right subtree
 class Tree:
     def __init__(self, val):
@@ -11,6 +15,7 @@ class Bst:
         self.arr = arr
         self.root = None
         self.vals = []
+        self.sub_height = 0
 
     # Initialization method that creates tree's root for first value
     # Then self.insert method is called for insertion of every other element in inputted order
@@ -22,13 +27,6 @@ class Bst:
 
         for i in arr:
             self.insert(root, i)
-
-        print('Ascending order: ', end='\t')
-        self.inOrder(root)
-        print('\n"From top" order: ', end='\t')
-        self.fromTop(root)
-        print('\nLevel by level order: ')
-        self.byLevels(root)
 
     # Recursive method that compares value to tree's node value and goes down the tree to either left or right subtree
     # If None is tree arg, creates one
@@ -43,6 +41,22 @@ class Bst:
 
         return tree
 
+    # Start method for printing tree's values in different orders
+    # Values are printed in-order, pre-order, descending order and by levels
+    def printInfo(self):
+        root = self.root
+
+        print('\nIn-order: ', end='\t')
+        self.inOrder(root)
+        print('\nPre-order: ', end='\t')
+        self.preOrder(root)
+        print('\nDesc-order: ', end='')
+        self.descOrder(root)
+        print('\nLevel by level order: ')
+        self.vals = []
+        self.byLevels(root)
+        print('')
+
     # Recursive method that prints elements of a tree in ascending order
     # Method goes from most left tree's node to most right node
     def inOrder(self, root):
@@ -53,13 +67,21 @@ class Bst:
 
     # Second recursive method for printing elements of a tree from top to left order
     # Method goes from root node and if possible goes down left, if not down right
-    def fromTop(self, root):
+    def preOrder(self, root):
         if root is not None:
             print(root.val, end=' ')
-            self.fromTop(root.left)
-            self.fromTop(root.right)
+            self.preOrder(root.left)
+            self.preOrder(root.right)
 
-    # Third iterative and recursive method for printing elements of a tree one by one level
+    # Third recursive method for printing elements in descending order
+    # Method goes from root node and if possible goes down right, if not down left
+    def descOrder(self, root):
+        if root is not None:
+            self.descOrder(root.right)
+            print(root.val, end=' ')
+            self.descOrder(root.left)
+
+    # Fourth iterative and recursive method for printing elements of a tree one by one level
     # Method calls self.__printLevel() method until empty level is found
     def byLevels(self, root):
         self.__printLevel(root, 0)
@@ -76,7 +98,9 @@ class Bst:
     def findMinMax(self):
         root = self.root
 
+        print('Path to min is: ', end=' ')
         self.__recurFindMin(root)
+        print('\nPath to max is: ', end=' ')
         self.__recurFindMax(root)
         print('')
 
@@ -84,17 +108,19 @@ class Bst:
     # Method always goes down the left side of the tree until leaf node is reached
     def __recurFindMin(self, root):
         if root.left is not None:
+            print(root.val, end=' ')
             self.__recurFindMin(root.left)
         else:
-            print(f'\n\nMin value is: \t\t{root.val}')
+            print(f'\nMin value is: \t{root.val}')
 
     # Recursive function for finding maximum node's value
     # Method always goes down the right side of the tree until leaf node is reached
     def __recurFindMax(self, root):
         if root.right is not None:
+            print(root.val, end=' ')
             self.__recurFindMax(root.right)
         else:
-            print(f'Max value is: \t\t{root.val}')
+            print(f'\nMax value is: \t{root.val}')
 
     # Start method that "popes" node of a tree
     # Firstly recursive self.__searchLevel() method is called to find node's level number
@@ -103,7 +129,7 @@ class Bst:
     def popNode(self, key):
         root = self.root
 
-        level = self.__searchLevel(key, root)
+        level, subtree_root = self.__searchLevel(key, root)
         print(f'Level of {key} is: \t{level}')
 
         if level != -1:
@@ -113,14 +139,6 @@ class Bst:
 
             root = self.__removeNode(key, root)
 
-            print('New ascending order: ', end='\t')
-            self.inOrder(root)
-            print('\nNew "from top" order: ', end='\t')
-            self.fromTop(root)
-            print('\nNew level by level order: ')
-            self.vals = []
-            self.byLevels(root)
-
             self.root = root
 
     # Recursive method for finding node with value equal to a given key and returning its level number
@@ -129,7 +147,7 @@ class Bst:
         if root is not None:
 
             if root.val == key:
-                return level
+                return level, root
             elif root.val > key:
                 return self.__searchLevel(key, root.left, level + 1)
             else:
@@ -192,6 +210,111 @@ class Bst:
         else:
             return -1
 
+    # Start method for finding subtree by its root value
+    # and deleting it by calling recursive self.__findSubtree() method
+    def popSubtree(self, key):
+        root = self.root
+        print('Subtree in post-order: ', end='\t')
+        self.root = self.__findSubtree(key, root)
+        print(f'\nThe height of the subtree is: {self.sub_height}')
+
+    # Simple recursive method similar to self.__searchLevel()
+    # Method goes down the tree until subtree's root node of given value is found
+    # Then self.__postOrderRemove(root) is called to remove subtree
+    # This method returns every changed node so main tree is updated
+    def __findSubtree(self, key, root):
+        if root.val > key:
+            root.left = self.__findSubtree(key, root.left)
+
+            return root
+        elif root.val < key:
+            root.right = self.__findSubtree(key, root.right)
+
+            return root
+        else:
+            root = self.__postOrderRemove(root)
+
+            return root
+
+    # Recursive function for removing subtree of given root node
+    # Nodes are removed one by one in post-order
+    # Height of subtree is updated every in every recursive step
+    def __postOrderRemove(self, root, level=0):
+        if root is not None:
+            root.left = self.__postOrderRemove(root.left, level + 1)
+            root.right = self.__postOrderRemove(root.right, level + 1)
+
+            print(root.val, end=' ')
+            self.sub_height = max(self.sub_height, level)
+
+            return None
+
+    # Start method that for balancing tree using DSW algorithm
+    # Firstly self.__dsw_first() method is called to create vine tree from given tree connected to dummy node
+    def dsw(self):
+        root = self.root
+
+        dummy = Tree(0)
+        dummy.right = root
+
+        vine_height = self.__dswFirst(dummy)
+
+        root = self.__dswSecond(dummy, vine_height)
+        self.root = root
+
+    # Iterative method for creating vine tree from given tree connected to dummy node, first phase of DSW algorithm
+    # Loop goes down right the tree, if left node is found it - rotates right
+    # Rotation replace root's left node (oldTemp) with root's-left node's right node (temp)
+    # Then oldTemp is made right node of temp, which is next set as new root node
+    def __dswFirst(self, root):
+        temp = root.right
+        n = 0
+
+        while temp:
+
+            if temp.left:
+                oldTemp = temp
+                temp = temp.left
+                oldTemp.left = temp.right
+                temp.right = oldTemp
+                root.right = temp
+            else:
+                n += 1
+                root = temp
+                temp = temp.right
+
+        return n
+
+    # Iterative method for balancing tree from given vine tree connected to dummy node, second phase of DSW algorithm
+    # Firstly self.__leftRotate() is called once to rotate left every second node
+    # Then self.__leftRotate() is called inside loop for rotating transformed vine
+    def __dswSecond(self, root, vine_height):
+        balanced_height = int(math.log2(vine_height + 1))
+        operations_num = 2 ** balanced_height - 1
+
+        self.__leftRotate(root, vine_height - operations_num)
+
+        for m in [operations_num // 2**i for i in range(1, balanced_height+1)]:
+            self.__leftRotate(root, m)
+
+        return root.right
+
+    # Iterative method for rotating left nodes in the given tree
+    # Loop goes down right the tree - dummy node (root), root's right node (oldTemp) and oldTemp's right node (temp)
+    # Temp is made right node of root node and oldTemp is made left node of temp
+    # Then temp is made new root
+    def __leftRotate(self, root, m):
+        temp = root.right
+
+        for i in range(m):
+            oldTemp = temp
+            temp = temp.right
+            root.right = temp
+            oldTemp.right = temp.left
+            temp.left = oldTemp
+            root = temp
+            temp = temp.right
+
 
 if __name__ == '__main__':
     root = None
@@ -201,6 +324,24 @@ if __name__ == '__main__':
     tree = Bst(arr)
     tree.construct()
 
-    tree.findMinMax()
+    tree.printInfo()
 
-    tree.popNode(8)
+
+    start = time.perf_counter_ns()
+
+    # Choose function:
+
+    # tree.findMinMax()
+
+    # tree.popNode(10)
+
+    # tree.popSubtree(14)
+
+    # tree.dsw()
+
+    end = time.perf_counter_ns()
+    print('---------------------------')
+    print(f'Computed in {end - start}ns')
+    print('---------------------------')
+
+    tree.printInfo()
