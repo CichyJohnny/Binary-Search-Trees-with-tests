@@ -269,7 +269,6 @@ class Avl:
     # and deleting it by calling recursive self.__findSubtree() method
     def popSubtree(self, key):
         root = self.root
-        print('Subtree in post-order: ', end='\t')
         self.root = self.__findSubtree(key, root)
         print(f'\nThe height of the subtree is: {self.sub_height}')
 
@@ -287,6 +286,9 @@ class Avl:
 
             return root
         else:
+            print('\nSubtree in pre-order: ', end='\t')
+            self.preOrder(root)
+
             root = self.__postOrderRemove(root)
 
             return root
@@ -299,7 +301,6 @@ class Avl:
             root.left = self.__postOrderRemove(root.left, level + 1)
             root.right = self.__postOrderRemove(root.right, level + 1)
 
-            print(root.val, end=' ')
             self.sub_height = max(self.sub_height, level)
 
             return None
@@ -373,7 +374,7 @@ class Avl:
 if __name__ == '__main__':
     root = None
 
-    arr = [8, 2, 5, 14, 1, 10, 12, 13, 6, 9]
+    arr = [1, 2, 7, 12, 13, 6, 8, 4, 10, 3, 5, 9, 11]
 
     tree = Avl(arr)
     tree.construct()
@@ -383,7 +384,7 @@ if __name__ == '__main__':
 
     # Choose function:
 
-    tree.findMinMax()
+    # tree.findMinMax()
 
     # tree.popNode(8)
 

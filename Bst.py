@@ -214,7 +214,6 @@ class Bst:
     # and deleting it by calling recursive self.__findSubtree() method
     def popSubtree(self, key):
         root = self.root
-        print('Subtree in post-order: ', end='\t')
         self.root = self.__findSubtree(key, root)
         print(f'\nThe height of the subtree is: {self.sub_height}')
 
@@ -232,6 +231,9 @@ class Bst:
 
             return root
         else:
+            print('\nSubtree in pre-order: ', end='\t')
+            self.preOrder(root)
+
             root = self.__postOrderRemove(root)
 
             return root
@@ -244,7 +246,6 @@ class Bst:
             root.left = self.__postOrderRemove(root.left, level + 1)
             root.right = self.__postOrderRemove(root.right, level + 1)
 
-            print(root.val, end=' ')
             self.sub_height = max(self.sub_height, level)
 
             return None
@@ -319,7 +320,7 @@ class Bst:
 if __name__ == '__main__':
     root = None
 
-    arr = [8, 2, 5, 14, 1, 10, 12, 13, 6, 9]
+    arr = [7, 2, 1, 6, 4, 3, 5, 12, 8, 10, 9, 11, 13]
 
     tree = Bst(arr)
     tree.construct()
@@ -333,9 +334,9 @@ if __name__ == '__main__':
 
     # tree.findMinMax()
 
-    # tree.popNode(10)
+    # tree.popNode(8)
 
-    # tree.popSubtree(14)
+    # tree.popSubtree(7)
 
     # tree.dsw()
 
