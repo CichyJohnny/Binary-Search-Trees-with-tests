@@ -22,10 +22,10 @@ class Bst:
     def construct(self):
         arr = self.arr
 
-        root = self.insert(None, arr.pop(0))
+        root = self.insert(None, arr[0])
         self.root = root
 
-        for i in arr:
+        for i in arr[1:]:
             self.insert(root, i)
 
     # Recursive method that compares value to tree's node value and goes down the tree to either left or right subtree

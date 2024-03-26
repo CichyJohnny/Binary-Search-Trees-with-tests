@@ -32,15 +32,6 @@ class Avl:
         for i in meds:
             self.insert(root, i)
 
-        print('In-order: ', end='\t')
-        self.inOrder(root)
-        print('\nPre-order: ', end='\t')
-        self.preOrder(root)
-        print('\nDesc-order: ', end='')
-        self.descOrder(root)
-        print('\nLevel by level order: ')
-        self.byLevels(root)
-
     # Recursive method that compares value to tree's node value and goes down the tree to either left or right subtree
     # If None is tree arg, creates one
     def insert(self, tree, val):
