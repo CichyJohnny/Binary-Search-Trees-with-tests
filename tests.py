@@ -14,8 +14,8 @@ def generate_random_list(maxi, length):
 
 
 # Adjustable
-n_range = [100, 200, 400, 600, 800, 1000, 2000, 4000, 6000, 8000, 10000, 20000, 30000, 40000, 50000]
-n_times = 5
+n_range = [100, 200, 400, 600, 800, 1000, 2000, 4000, 6000, 8000, 10000, 12000, 14000]
+n_times = 10
 
 avl_construct = []
 avl_find_min = []
